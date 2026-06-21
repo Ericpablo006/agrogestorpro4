@@ -472,3 +472,13 @@ body.locked .sidebar,body.locked .app,body.locked .mobile-menu-btn,body.locked .
 @media(max-width:480px){
   .cards{grid-template-columns:1fr}
 }
+
+
+/* Garantia / avaliação do imóvel */
+.summary-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:16px}
+.summary-row div{background:var(--paper-3);border:1px solid var(--linha);border-radius:var(--r-md);padding:14px 16px}
+.summary-row span{display:block;color:var(--ink-soft);font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+.summary-row strong{display:block;margin-top:5px;font-family:var(--font-mono);font-size:20px;color:var(--capim-dark)}
+#garantiaBody select{min-width:120px}
+#garantiaBody input{min-width:110px}
+#garantiaBody td:first-child input{min-width:170px}

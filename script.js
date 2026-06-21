@@ -205,7 +205,7 @@ async function iniciarLogin(){
   });
 }
 const pages=[
- ['dashboard','🏠 Dashboard'],['produtor','👨‍🌾 Produtor'],['propriedade','🌱 Propriedade'],['agricultura','🌾 Agricultura'],['pecuaria','🐄 Pecuária'],['projeto','📄 Projeto'],['documentos','📎 Documentos'],['roteiro','🧭 Roteiro'],['mapa','🗺️ Mapa'],['agenda','📅 Agenda'],['relatorios','📊 Relatórios']
+ ['dashboard','🏠 Dashboard'],['produtor','👨‍🌾 Produtor'],['propriedade','🌱 Propriedade'],['agricultura','🌾 Agricultura'],['pecuaria','🐄 Pecuária'],['projeto','📄 Projeto'],['garantia','🏠 Garantia'],['documentos','📎 Documentos'],['roteiro','🧭 Roteiro'],['mapa','🗺️ Mapa'],['agenda','📅 Agenda'],['relatorios','📊 Relatórios']
 ];
 let current=0;
 let produtores=[];
@@ -280,13 +280,14 @@ function getData(){return{
  propriedade:$('propriedade').value,comunidade:$('comunidade').value,cep:$('cep')?.value||'',municipio:$('municipio').value,uf:$('uf').value,areaTotal:$('areaTotal').value,areaProdutiva:$('areaProdutiva').value,areaPlantio:$('areaPlantio')?.value||'',car:$('car').value,ccir:$('ccir').value,itr:$('itr').value,gps:$('gps').value,seiaLogin:$('seiaLogin')?.value||'',seiaSenha:$('seiaSenha')?.value||'',
  numeroProposta:$('numeroProposta')?.value||'',banco:$('banco').value,agencia:$('agencia')?.value||'',cidadeAgencia:$('cidadeAgencia')?.value||'',conta:$('conta')?.value||'',linha:$('linha').value,finalidade:$('finalidade').value,valorSolicitado:$('valorSolicitado').value,prazo:$('prazo').value,carencia:$('carencia').value,
  dataVisita:$('dataVisita').value,tecnico:$('tecnico').value,objetivoVisita:$('objetivoVisita').value,observacoes:$('observacoes').value,recomendacoes:$('recomendacoes').value,
- culturas:getRows('culturasBody'),pecuaria:getRows('pecuariaBody'),itens:getRows('itensBody'),agenda:agendaItens,docs:docs.map(docMeta)
+ culturas:getRows('culturasBody'),pecuaria:getRows('pecuariaBody'),itens:getRows('itensBody'),garantia:getGarantiaRows(),agenda:agendaItens,docs:docs.map(docMeta)
 };}
 async function setData(d={}){
  ['nome','cpf','rg','nascimento','estadoCivil','telefone','email','caf','propriedade','comunidade','cep','municipio','uf','areaTotal','areaProdutiva','areaPlantio','car','ccir','itr','gps','seiaLogin','seiaSenha','consultaCar','consultaSeiaLogin','consultaSeiaSenha','situacaoAmbiental','obsAmbiental','roteiroChegada','numeroProposta','banco','agencia','cidadeAgencia','conta','linha','finalidade','valorSolicitado','prazo','carencia','dataVisita','tecnico','objetivoVisita','observacoes','recomendacoes'].forEach(id=>{if($(id)) $(id).value=d[id]||''});
  renderRows('culturasBody',d.culturas||[],['cultura','area','producao','unidade','preco']);
  renderRows('pecuariaBody',d.pecuaria||[],['atividade','qtd','producao','unidade','preco']);
  renderRows('itensBody',d.itens||[],['descricao','qtd','valor']);
+ renderGarantiaRows(d.garantia||[]);
  const key=safeKey(d.cpf||d.nome);
  const savedDocs=key ? await loadDocsForProducer(key) : [];
  docs=(d.docs&&d.docs.length) ? d.docs : savedDocs;
@@ -306,17 +307,50 @@ function addRow(body,keys,vals={}){
 }
 function renderRows(body,rows,keys){$(body).innerHTML='';rows.forEach(r=>addRow(body,keys,r));}
 function getRows(body){return [...$(body).querySelectorAll('tr')].map(tr=>{let o={};tr.querySelectorAll('input').forEach(i=>o[i.dataset.k]=i.value);return o});}
+
+function addGarantiaRow(vals={}){
+ const tr=document.createElement('tr');
+ tr.innerHTML=`
+  <td><input data-k="item" value="${vals.item||''}" placeholder="Ex: casa sede, secador, depósito"></td>
+  <td><input data-k="quantidade" value="${vals.quantidade||''}" type="number" min="0" step="0.01"></td>
+  <td><input data-k="unidade" value="${vals.unidade||''}" placeholder="un, m², ha"></td>
+  <td><input data-k="idade" value="${vals.idade||''}" placeholder="Ex: 5 anos"></td>
+  <td><select data-k="estado"><option value="">Selecione</option><option ${vals.estado==='Ótimo'?'selected':''}>Ótimo</option><option ${vals.estado==='Bom'?'selected':''}>Bom</option><option ${vals.estado==='Regular'?'selected':''}>Regular</option><option ${vals.estado==='Ruim'?'selected':''}>Ruim</option></select></td>
+  <td><input data-k="valor" value="${vals.valor||''}" type="number" min="0" step="0.01"></td>
+  <td class="total"></td>
+  <td><button class="secondary remove" type="button">x</button></td>`;
+ $('garantiaBody').appendChild(tr);
+ tr.querySelector('.remove').onclick=()=>{tr.remove();calcGarantiaTotal();calcProgress();};
+ tr.querySelectorAll('input,select').forEach(i=>i.oninput=()=>{calcGarantiaTotal();calcProgress();});
+ calcGarantiaTotal();
+}
+function renderGarantiaRows(rows=[]){if(!$('garantiaBody')) return; $('garantiaBody').innerHTML=''; rows.forEach(r=>addGarantiaRow(r)); calcGarantiaTotal();}
+function getGarantiaRows(){if(!$('garantiaBody')) return []; return [...$('garantiaBody').querySelectorAll('tr')].map(tr=>{let o={};tr.querySelectorAll('input,select').forEach(i=>o[i.dataset.k]=i.value);return o});}
+function calcGarantiaTotal(){
+ if(!$('garantiaBody')) return;
+ let total=0;
+ [...$('garantiaBody').querySelectorAll('tr')].forEach(tr=>{
+  const qtd=+tr.querySelector('[data-k="quantidade"]')?.value||0;
+  const valor=+tr.querySelector('[data-k="valor"]')?.value||0;
+  const soma=qtd*valor;
+  total+=soma;
+  const td=tr.querySelector('.total'); if(td) td.textContent=money(soma);
+ });
+ if($('totalGarantia')) $('totalGarantia').textContent=money(total);
+}
+
 function calcAll(){
  ['culturasBody','pecuariaBody'].forEach(body=>[...$(body).querySelectorAll('tr')].forEach(tr=>{let prod=+tr.querySelector('[data-k="producao"]')?.value||0,preco=+tr.querySelector('[data-k="preco"]')?.value||0;tr.querySelector('.total').textContent=money(prod*preco)}));
  [...$('itensBody').querySelectorAll('tr')].forEach(tr=>{let qtd=+tr.querySelector('[data-k="qtd"]')?.value||0,val=+tr.querySelector('[data-k="valor"]')?.value||0;tr.querySelector('.total').textContent=money(qtd*val)});
+ calcGarantiaTotal();
  calcProgress();
 }
 function calcProgress(){
  const d=getData();
  const required=['nome','cpf','telefone','caf','propriedade','municipio','areaTotal','areaPlantio','car','banco','linha','numeroProposta','valorSolicitado'];
  let ok=required.filter(k=>d[k]).length;
- if(d.culturas.length) ok++; if(d.pecuaria.length) ok++; if(d.itens.length) ok++; if(d.observacoes) ok++; if(d.docs.length) ok++; if((d.agenda||[]).length) ok++;
- const pct=Math.min(100,Math.round(ok/(required.length+6)*100));
+ if(d.culturas.length) ok++; if(d.pecuaria.length) ok++; if(d.itens.length) ok++; if((d.garantia||[]).length) ok++; if(d.observacoes) ok++; if(d.docs.length) ok++; if((d.agenda||[]).length) ok++;
+ const pct=Math.min(100,Math.round(ok/(required.length+7)*100));
  $('progressText').textContent=pct+'%'; $('progressBar').style.width=pct+'%'; updateDash();
 }
 async function salvar(){
@@ -355,7 +389,7 @@ function updateDash(){
 function setReadOnly(status){
   document.body.classList.toggle('view-only', !!status);
   document.querySelectorAll('.app input,.app textarea,.app select').forEach(el=>{ if(el.id!=='busca') el.disabled=!!status; });
-  ['btnSalvar','addCultura','addPecuaria','addItem','docs','btnLimparDocs'].forEach(id=>{ if($(id)) $(id).disabled=!!status; });
+  ['btnSalvar','addCultura','addPecuaria','addItem','addGarantia','docs','btnLimparDocs'].forEach(id=>{ if($(id)) $(id).disabled=!!status; });
 }
 function renderLista(){
  const q=($('busca')?.value||'').toLowerCase();
@@ -427,6 +461,7 @@ function gerarPDF(){
  line(`CAR: ${d.car} | CCIR: ${d.ccir} | ITR/NIRF: ${d.itr}`); line(`SEIA login: ${d.seiaLogin||''} | SEIA senha: ${d.seiaSenha ? '********' : ''}`); line('');
  line('AGRICULTURA'); d.culturas.forEach(c=>line(`${c.cultura||'-'} | Área: ${c.area||0} ha | Produção: ${c.producao||0} ${c.unidade||''} | Preço: ${money(c.preco)} | Receita: ${money((+c.producao||0)*(+c.preco||0))}`));
  line(''); line('PECUÁRIA'); d.pecuaria.forEach(c=>line(`${c.atividade||'-'} | Qtd: ${c.qtd||0} | Produção: ${c.producao||0} ${c.unidade||''} | Preço: ${money(c.preco)} | Receita: ${money((+c.producao||0)*(+c.preco||0))}`));
+ line(''); line('GARANTIA / AVALIAÇÃO DO IMÓVEL'); (d.garantia||[]).forEach(g=>line(`${g.item||'-'} | Qtd: ${g.quantidade||0} ${g.unidade||''} | Idade: ${g.idade||''} | Estado: ${g.estado||''} | Valor: ${money(g.valor)} | Total: ${money((+g.quantidade||0)*(+g.valor||0))}`)); line('Total garantia: '+money((d.garantia||[]).reduce((s,g)=>s+(+g.quantidade||0)*(+g.valor||0),0)));
  line(''); line('DOCUMENTOS'); d.docs.forEach(x=>line(`- ${x.name}`));
  line(''); line('PROJETO PRONAF'); line(`Proposta: ${d.numeroProposta||''}`); line(`Banco: ${d.banco} | Agência: ${d.agencia||''} | Cidade agência: ${d.cidadeAgencia||''} | Conta: ${d.conta||''}`); line(`Linha: ${d.linha} | Valor: ${money(d.valorSolicitado)}`); d.itens.forEach(i=>line(`${i.descricao||'-'} | Qtd: ${i.qtd||0} | Unit: ${money(i.valor)} | Total: ${money((+i.qtd||0)*(+i.valor||0))}`));
  line(''); line('ROTEIRO PARA CHEGAR NA PROPRIEDADE'); line(`Data: ${d.dataVisita} | Técnico: ${d.tecnico}`); line(`Objetivo: ${d.objetivoVisita}`); line(`Observações: ${d.observacoes}`); line(`Recomendações: ${d.recomendacoes}`);
@@ -636,7 +671,7 @@ function bind(){
  initMenu();
  $('btnAvancar').onclick=()=>showPage(Math.min(current+1,pages.length-1)); $('btnVoltar').onclick=()=>showPage(Math.max(current-1,0));
  $('btnSalvar').onclick=salvar; $('btnNovo').onclick=novo; $('btnPDF').onclick=gerarPDF; $('btnPDF2').onclick=gerarPDF; $('btnPasta').onclick=criarPasta; $('btnLimpar').onclick=novo;
- $('addCultura').onclick=()=>addRow('culturasBody',['cultura','area','producao','unidade','preco']); $('addPecuaria').onclick=()=>addRow('pecuariaBody',['atividade','qtd','producao','unidade','preco']); $('addItem').onclick=()=>addRow('itensBody',['descricao','qtd','valor']);
+ $('addCultura').onclick=()=>addRow('culturasBody',['cultura','area','producao','unidade','preco']); $('addPecuaria').onclick=()=>addRow('pecuariaBody',['atividade','qtd','producao','unidade','preco']); $('addItem').onclick=()=>addRow('itensBody',['descricao','qtd','valor']); if($('addGarantia')) $('addGarantia').onclick=()=>addGarantiaRow();
  $('busca').oninput=renderLista;
  if($('btnPlanilha')) $('btnPlanilha').onclick=gerarPlanilha;
  if($('btnAbrirMaps')) $('btnAbrirMaps').onclick=abrirMaps;

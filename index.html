@@ -113,44 +113,6 @@
         <label>Telefone/WhatsApp<input id="telefone" class="numbers-only phone-field" inputmode="numeric" placeholder="(00) 00000-0000" /></label>
         <label>E-mail<input type="email" id="email" /></label>
         <label>CAF<input id="caf" /></label>
-        <label>
-        Apelido
-        <input id="apelido" type="text" placeholder="Como é conhecido">
-      </label>
-
-    </div>
-
-  </div>
-
-  <!-- COLE AQUI -->
-
-  <div class="panel">
-
-    <h3>Dados do Cônjuge</h3>
-
-    <div class="grid">
-
-      <label>
-        Nome do cônjuge
-        <input id="conjugeNome" type="text">
-      </label>
-
-      <label>
-        CPF do cônjuge
-        <input id="conjugeCpf" maxlength="14">
-      </label>
-
-      <label>
-        Data de nascimento
-        <input id="conjugeNascimento" type="date">
-      </label>
-
-    </div>
-
-  </div>
-  </div>
-
-</section>
       </div>
     </section>
 
@@ -192,19 +154,7 @@
     <section class="page" data-page="projeto">
       <div class="panel grid2">
         <label>Número da proposta<input id="numeroProposta" class="numbers-only" inputmode="numeric" placeholder="Número da proposta" /></label>
-        <label>Banco<select id="banco">
-          <option value="">Selecione</option>
-          <option>Banco do Brasil</option>
-          <option>Banco do Nordeste</option>
-          <option>Caixa Econômica Federal</option>
-          <option>Sicoob</option>
-          <option>Sicredi</option>
-          <option>Bradesco</option>
-          <option>Santander</option>
-          <option>Itaú</option>
-          <option>Cresol</option>
-          <option>Banrisul</option>
-          </select></label>
+        <label>Banco<input id="banco" class="letters-only" placeholder="Banco do Brasil, Banco do Nordeste..." /></label>
         <label>Agência<input id="agencia" class="numbers-only" inputmode="numeric" placeholder="Número da agência" /></label>
         <label>Cidade da agência<input id="cidadeAgencia" class="letters-only" placeholder="Preenche pelo município ou manualmente" /></label>
         <label>Conta<input id="conta" class="numbers-only" inputmode="numeric" placeholder="Número da conta" /></label>
@@ -232,6 +182,32 @@
       <div class="panel">
         <h2>Itens financiados</h2><button id="addItem">+ Adicionar item</button>
         <table><thead><tr><th>Descrição</th><th>Qtd</th><th>Valor Unit.</th><th>Total</th><th></th></tr></thead><tbody id="itensBody"></tbody></table>
+      </div>
+    </section>
+
+    <section class="page" data-page="garantia">
+      <div class="panel">
+        <h2>Garantia / Avaliação do imóvel</h2>
+        <p class="muted">Cadastre os bens que podem compor a garantia do projeto: casa sede, secador, depósito, galpão, curral, benfeitorias e outros.</p>
+        <div class="table-actions"><button id="addGarantia" type="button">+ Adicionar bem</button></div>
+        <table>
+          <thead>
+            <tr>
+              <th>Item / bem</th>
+              <th>Quantidade</th>
+              <th>Unidade de medida</th>
+              <th>Idade do bem</th>
+              <th>Estado de conservação</th>
+              <th>Valor reposição / atual</th>
+              <th>Total</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="garantiaBody"></tbody>
+        </table>
+        <div class="summary-row garantia-summary">
+          <div><span>Total estimado da garantia</span><strong id="totalGarantia">R$ 0,00</strong></div>
+        </div>
       </div>
     </section>
 
