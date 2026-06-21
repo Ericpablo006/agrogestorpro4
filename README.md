@@ -23,3 +23,8 @@ Para publicar:
 firebase login
 firebase deploy
 ```
+
+
+## Atualização Perfil
+
+Esta versão inclui a aba **Perfil**, onde o usuário logado pode alterar nome, CPF, telefone e senha pelo Firebase Authentication/Firestore.

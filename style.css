@@ -482,3 +482,9 @@ body.locked .sidebar,body.locked .app,body.locked .mobile-menu-btn,body.locked .
 #garantiaBody select{min-width:120px}
 #garantiaBody input{min-width:110px}
 #garantiaBody td:first-child input{min-width:170px}
+
+
+/* Perfil do usuário */
+.profile-actions{margin-top:18px;display:flex;gap:10px;flex-wrap:wrap}
+#perfilEmail{opacity:.75;cursor:not-allowed}
+[data-page="perfil"] .panel{max-width:980px}

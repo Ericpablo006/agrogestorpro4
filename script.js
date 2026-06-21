@@ -7,6 +7,7 @@ import {
   signInWithEmailAndPassword,
   signOut,
   updateProfile,
+  updatePassword,
   GoogleAuthProvider,
   OAuthProvider,
   signInWithPopup
@@ -19,7 +20,8 @@ import {
   collection,
   serverTimestamp,
   onSnapshot,
-  deleteDoc
+  deleteDoc,
+  getDoc
 } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
 import {
   getStorage,
@@ -198,6 +200,7 @@ async function iniciarLogin(){
       ocultarLogin();
       setStatus(`Logado: ${user.email}`);
       carregarProdutoresFirebase();
+      carregarPerfil();
     }else{
       mostrarLogin();
       setStatus('Cadastros serão salvos no Firebase após o login.');
@@ -205,7 +208,7 @@ async function iniciarLogin(){
   });
 }
 const pages=[
- ['dashboard','🏠 Dashboard'],['produtor','👨‍🌾 Produtor'],['propriedade','🌱 Propriedade'],['agricultura','🌾 Agricultura'],['pecuaria','🐄 Pecuária'],['projeto','📄 Projeto'],['garantia','🏠 Garantia'],['documentos','📎 Documentos'],['roteiro','🧭 Roteiro'],['mapa','🗺️ Mapa'],['agenda','📅 Agenda'],['relatorios','📊 Relatórios']
+ ['dashboard','🏠 Dashboard'],['produtor','👨‍🌾 Produtor'],['propriedade','🌱 Propriedade'],['agricultura','🌾 Agricultura'],['pecuaria','🐄 Pecuária'],['projeto','📄 Projeto'],['garantia','🏠 Garantia'],['documentos','📎 Documentos'],['roteiro','🧭 Roteiro'],['mapa','🗺️ Mapa'],['agenda','📅 Agenda'],['relatorios','📊 Relatórios'],['perfil','👤 Perfil']
 ];
 let current=0;
 let produtores=[];
@@ -667,6 +670,78 @@ function gerarRascunhoProjeto(){
  $('resultadoIA').innerHTML='<h3>Rascunho do projeto</h3><textarea class="wide rascunho">'+texto+'</textarea>';
 }
 
+
+async function carregarPerfil(){
+  if(!currentUser) return;
+  if($('perfilEmail')) $('perfilEmail').value = currentUser.email || '';
+  if($('perfilNome')) $('perfilNome').value = currentUser.displayName || '';
+  try{
+    const snap = await getDoc(doc(db,'usuarios',currentUser.uid));
+    if(snap.exists()){
+      const u = snap.data();
+      if($('perfilNome') && u.nome) $('perfilNome').value = u.nome;
+      if($('perfilCpf')) $('perfilCpf').value = u.cpf || '';
+      if($('perfilTelefone')) $('perfilTelefone').value = u.telefone || '';
+    }
+  }catch(e){
+    console.warn('Não foi possível carregar perfil do usuário.', e);
+  }
+}
+
+async function salvarPerfil(){
+  if(!currentUser){alert('Faça login antes de alterar o perfil.');return;}
+  const nome = ($('perfilNome')?.value || '').trim();
+  const cpf = ($('perfilCpf')?.value || '').trim();
+  const telefone = ($('perfilTelefone')?.value || '').trim();
+  const senha = $('perfilSenha')?.value || '';
+  const senha2 = $('perfilSenha2')?.value || '';
+
+  if(nome.length < 3){alert('Digite um nome de usuário válido.');return;}
+  if(senha || senha2){
+    if(senha.length < 6){alert('A nova senha precisa ter pelo menos 6 caracteres.');return;}
+    if(senha !== senha2){alert('As senhas não conferem.');return;}
+  }
+
+  try{
+    await updateProfile(currentUser,{displayName:nome});
+    await setDoc(doc(db,'usuarios',currentUser.uid),{
+      nome,
+      email: currentUser.email || '',
+      cpf,
+      telefone,
+      atualizadoEm: serverTimestamp()
+    },{merge:true});
+
+    if(senha){
+      await updatePassword(currentUser, senha);
+      if($('perfilSenha')) $('perfilSenha').value='';
+      if($('perfilSenha2')) $('perfilSenha2').value='';
+    }
+
+    setStatus(`Logado: ${currentUser.email}`);
+    alert('Perfil atualizado com sucesso!');
+  }catch(e){
+    console.error(e);
+    if(e.code === 'auth/requires-recent-login'){
+      alert('Por segurança, saia e entre novamente para alterar a senha.');
+    }else{
+      alert('Não foi possível salvar o perfil. Verifique sua conexão e as regras do Firestore.');
+    }
+  }
+}
+
+function configurarPerfil(){
+  if($('btnSalvarPerfil')) $('btnSalvarPerfil').onclick = salvarPerfil;
+  [['togglePerfilSenha','perfilSenha'],['togglePerfilSenha2','perfilSenha2']].forEach(([btnId,inputId])=>{
+    if($(btnId)) $(btnId).onclick=()=>{
+      const campo=$(inputId);
+      if(!campo) return;
+      campo.type = campo.type === 'password' ? 'text' : 'password';
+      $(btnId).textContent = campo.type === 'password' ? '👁️' : '🙈';
+    };
+  });
+}
+
 function bind(){
  initMenu();
  $('btnAvancar').onclick=()=>showPage(Math.min(current+1,pages.length-1)); $('btnVoltar').onclick=()=>showPage(Math.max(current-1,0));
@@ -685,6 +760,7 @@ function bind(){
  if($('mobileMenuBtn')) $('mobileMenuBtn').onclick=()=>document.body.classList.toggle('menu-open');
  if($('menuOverlay')) $('menuOverlay').onclick=closeMobileMenu;
  configurarValidacoes();
+ configurarPerfil();
  document.querySelectorAll('input,textarea,select').forEach(el=>el.addEventListener('input',calcProgress));
  setData(ativo).then(()=>{renderLista();showPage(0)});
 }

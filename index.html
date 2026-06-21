@@ -331,6 +331,44 @@
       </div>
     </section>
 
+
+    <section class="page" data-page="perfil">
+      <div class="panel">
+        <h2>Meu Perfil</h2>
+        <p class="muted">Atualize seu nome de usuário, CPF, telefone e senha da conta logada.</p>
+        <div class="grid2">
+          <label>Nome de usuário
+            <input id="perfilNome" class="letters-only" placeholder="Seu nome completo">
+          </label>
+          <label>E-mail
+            <input id="perfilEmail" type="email" disabled>
+          </label>
+          <label>CPF
+            <input id="perfilCpf" class="numbers-only cpf-field" inputmode="numeric" maxlength="14" placeholder="000.000.000-00">
+          </label>
+          <label>Telefone
+            <input id="perfilTelefone" class="numbers-only phone-field" inputmode="numeric" placeholder="(00) 00000-0000">
+          </label>
+          <label>Nova senha
+            <div class="password-wrap">
+              <input id="perfilSenha" type="password" placeholder="Deixe em branco para não alterar" autocomplete="new-password">
+              <button id="togglePerfilSenha" class="eye-btn" type="button" title="Ver senha">👁️</button>
+            </div>
+          </label>
+          <label>Confirmar nova senha
+            <div class="password-wrap">
+              <input id="perfilSenha2" type="password" placeholder="Repita a nova senha" autocomplete="new-password">
+              <button id="togglePerfilSenha2" class="eye-btn" type="button" title="Ver senha">👁️</button>
+            </div>
+          </label>
+        </div>
+        <div class="profile-actions">
+          <button id="btnSalvarPerfil" type="button">💾 Salvar perfil</button>
+        </div>
+        <small class="muted">Para alterar a senha, talvez seja necessário sair e entrar novamente por segurança do Firebase.</small>
+      </div>
+    </section>
+
     <footer class="wizard">
       <button class="secondary" id="btnVoltar">← Voltar</button>
       <span id="stepInfo">Etapa 1 de 9</span>
