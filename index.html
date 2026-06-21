@@ -201,7 +201,19 @@
     <section class="page" data-page="projeto">
       <div class="panel grid2">
         <label>Número da proposta<input id="numeroProposta" class="numbers-only" inputmode="numeric" placeholder="Número da proposta" /></label>
-        <label>Banco<input id="banco" class="letters-only" placeholder="Banco do Brasil, Banco do Nordeste..." /></label>
+        <label>Banco<select id="banco">
+          <option value="">Selecione</option>
+          <option>Banco do Brasil</option>
+          <option>Banco do Nordeste</option>
+          <option>Caixa Econômica Federal</option>
+          <option>Sicoob</option>
+          <option>Sicredi</option>
+          <option>Bradesco</option>
+          <option>Santander</option>
+          <option>Itaú</option>
+          <option>Cresol</option>
+          <option>Banrisul</option>
+          </select></label>
         <label>Agência<input id="agencia" class="numbers-only" inputmode="numeric" placeholder="Número da agência" /></label>
         <label>Cidade da agência<input id="cidadeAgencia" class="letters-only" placeholder="Preenche pelo município ou manualmente" /></label>
         <label>Conta<input id="conta" class="numbers-only" inputmode="numeric" placeholder="Número da conta" /></label>
