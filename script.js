@@ -116,6 +116,8 @@ async function criarUsuario(){
     if(e.code==='auth/email-already-in-use') alert('Este e-mail já está cadastrado.');
     else alert('Erro ao cadastrar usuário no Firebase.');
   }
+}
+
 function userProdutoresCollection(){
   if(!currentUser) throw new Error('Usuário não autenticado.');
   return collection(db, 'produtores');
