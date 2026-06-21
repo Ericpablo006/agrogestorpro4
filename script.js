@@ -597,7 +597,20 @@ function atualizarMiniMapa(){
  if($('gpsPreview')) $('gpsPreview').textContent=lat+', '+lng;
  $('miniMapa').innerHTML=`<iframe title="Mini mapa" loading="lazy" src="https://maps.google.com/maps?q=${lat},${lng}&z=15&output=embed"></iframe>`;
 }
-function abrirMaps(){const gps=$('gps')?.value||''; if(!gps){alert('Informe as coordenadas GPS.');return;} window.open('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(gps),'_blank');}
+function abrirMaps() {
+  const gps = $("gps")?.value || "";
+  const coords = obterCoordenadas(gps);
+
+  if (!coords) {
+    alert("Informe uma localização válida.");
+    return;
+  }
+
+  window.open(
+    `https://www.google.com/maps/search/?api=1&query=${coords.lat},${coords.lng}`,
+    "_blank"
+  );
+}
 function abrirEarth(){const gps=$('gps')?.value||''; if(!gps){alert('Informe as coordenadas GPS.');return;} window.open('https://earth.google.com/web/search/'+encodeURIComponent(gps),'_blank');}
 function capturarGps(){ if(!navigator.geolocation){alert('GPS não disponível neste navegador.');return;} navigator.geolocation.getCurrentPosition(p=>{ $('gps').value=p.coords.latitude+', '+p.coords.longitude; atualizarMiniMapa(); calcProgress(); },()=>alert('Não foi possível capturar o GPS.')); }
 function abrirCAR(){ window.open('https://www.car.gov.br/#/consultar','_blank'); }
@@ -652,3 +665,15 @@ function bind(){
 }
 bind();
 iniciarLogin();
+
+const campoGps = document.getElementById("gps");
+
+if (campoGps) {
+  campoGps.addEventListener("input", () => {
+    atualizarMiniMapa();
+  });
+
+  campoGps.addEventListener("blur", () => {
+    atualizarMiniMapa();
+  });
+}
