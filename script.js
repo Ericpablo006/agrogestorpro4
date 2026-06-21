@@ -293,7 +293,76 @@ async function setData(d={}){
  agendaItens=Array.isArray(d.agenda)?d.agenda:[];
  renderDocs();
  renderAgenda();
- atualizarMiniMapa();
+ function dmsParaDecimal(valor) {
+  const texto = String(valor).trim().toUpperCase();
+
+  const partes = texto.match(/(\d+(?:\.\d+)?)\D+(\d+(?:\.\d+)?)?\D*(\d+(?:\.\d+)?)?\D*([NSEW])/);
+
+  if (!partes) return null;
+
+  let graus = parseFloat(partes[1]) || 0;
+  let minutos = parseFloat(partes[2]) || 0;
+  let segundos = parseFloat(partes[3]) || 0;
+  let direcao = partes[4];
+
+  let decimal = graus + minutos / 60 + segundos / 3600;
+
+  if (direcao === "S" || direcao === "W") {
+    decimal *= -1;
+  }
+
+  return decimal;
+}
+
+function obterCoordenadas(gps) {
+  const texto = String(gps || "").trim();
+
+  const decimal = texto.match(/-?\d+(?:\.\d+)?\s*,\s*-?\d+(?:\.\d+)?/);
+  if (decimal) {
+    const [lat, lng] = decimal[0].split(",").map(v => v.trim());
+    return { lat, lng };
+  }
+
+  const partes = texto.split(",");
+  if (partes.length >= 2) {
+    const lat = dmsParaDecimal(partes[0]);
+    const lng = dmsParaDecimal(partes[1]);
+
+    if (lat !== null && lng !== null) {
+      return {
+        lat: lat.toFixed(6),
+        lng: lng.toFixed(6)
+      };
+    }
+  }
+
+  return null;
+}
+
+function atualizarMiniMapa() {
+  if (!$("miniMapa")) return;
+
+  const gps = $("gps")?.value || "";
+  const coords = obterCoordenadas(gps);
+
+  if ($("gpsPreview")) {
+    $("gpsPreview").textContent = gps || "não informado";
+  }
+
+  if (!coords) {
+    $("miniMapa").innerHTML =
+      "Digite as coordenadas em decimal ou em grau, minuto e segundo. Ex: 13°22'13\"S, 39°04'23\"W";
+    return;
+  }
+
+  $("miniMapa").innerHTML = `
+    <iframe
+      title="Mini mapa"
+      loading="lazy"
+      src="https://maps.google.com/maps?q=${coords.lat},${coords.lng}&z=15&output=embed">
+    </iframe>
+  `;
+}
  calcProgress();
 }
 function addRow(body,keys,vals={}){
