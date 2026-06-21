@@ -116,15 +116,12 @@ async function criarUsuario(){
     if(e.code==='auth/email-already-in-use') alert('Este e-mail já está cadastrado.');
     else alert('Erro ao cadastrar usuário no Firebase.');
   }
+function userProdutoresCollection(){
+  return collection(db, 'produtores');
 }
 
-function userProdutoresCollection(){
-  if(!currentUser) throw new Error('Usuário não autenticado.');
-  return collection(db,'usuarios',currentUser.uid,'produtores');
-}
 function userProdutorDoc(key){
-  if(!currentUser) throw new Error('Usuário não autenticado.');
-  return doc(db,'usuarios',currentUser.uid,'produtores',key);
+  return doc(db, 'produtores', key);
 }
 function storageDocRef(key,fileName){
   if(!currentUser) throw new Error('Usuário não autenticado.');
