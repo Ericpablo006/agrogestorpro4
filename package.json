@@ -1,0 +1,1 @@
+{"scripts":{"deploy":"firebase deploy","serve":"firebase emulators:start --only hosting"},"devDependencies":{"firebase-tools":"latest"}}
