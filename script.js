@@ -117,10 +117,12 @@ async function criarUsuario(){
     else alert('Erro ao cadastrar usuário no Firebase.');
   }
 function userProdutoresCollection(){
+  if(!currentUser) throw new Error('Usuário não autenticado.');
   return collection(db, 'produtores');
 }
 
 function userProdutorDoc(key){
+  if(!currentUser) throw new Error('Usuário não autenticado.');
   return doc(db, 'produtores', key);
 }
 function storageDocRef(key,fileName){
