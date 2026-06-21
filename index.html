@@ -18,7 +18,7 @@
       <div class="login-tag-wrap"><span class="login-tag">Ficha de campo · PRONAF</span></div>
       <img src="assets/logo.png?v=2" class="login-logo" alt="AgroGestor Pro">
       <h1>AgroGestor Pro</h1>
-      <p>Entre ou cadastre um usuário.</p>
+      <p>Entre ou cadastre um usuário. Os usuários ficam salvos no Firebase.</p>
 
       <label>E-mail
         <input id="loginEmail" type="email" placeholder="seuemail@exemplo.com" autocomplete="email">
@@ -56,10 +56,10 @@
             <option>Administrador</option>
           </select>
         </label>
-        <button id="btnCriarUsuario" type="button">Cadastrar </button>
+        <button id="btnCriarUsuario" type="button">Cadastrar no Firebase</button>
       </div>
 
-      <small class="login-help" id="firebaseStatus">Conectando </small>
+      <small class="login-help" id="firebaseStatus">Conectando ao Firebase...</small>
     </div>
   </section>
 
@@ -113,41 +113,6 @@
         <label>Telefone/WhatsApp<input id="telefone" class="numbers-only phone-field" inputmode="numeric" placeholder="(00) 00000-0000" /></label>
         <label>E-mail<input type="email" id="email" /></label>
         <label>CAF<input id="caf" /></label>
-        <label>
-        Apelido
-        <input id="apelido" type="text" placeholder="Como é conhecido">
-      </label>
-
-    </div>
-
-  </div>
-
-  <!-- COLE AQUI -->
-
-  <div class="panel">
-
-    <h3>Dados do Cônjuge</h3>
-
-    <div class="grid">
-
-      <label>
-        Nome do cônjuge
-        <input id="conjugeNome" type="text">
-      </label>
-
-      <label>
-        CPF do cônjuge
-        <input id="conjugeCpf" maxlength="14">
-      </label>
-
-      <label>
-        Data de nascimento
-        <input id="conjugeNascimento" type="date">
-      </label>
-
-    </div>
-
-  </div>
       </div>
     </section>
 
@@ -189,19 +154,7 @@
     <section class="page" data-page="projeto">
       <div class="panel grid2">
         <label>Número da proposta<input id="numeroProposta" class="numbers-only" inputmode="numeric" placeholder="Número da proposta" /></label>
-        <label>Banco<select id="banco">
-          <option value="">Selecione</option>
-          <option>Banco do Brasil</option>
-          <option>Banco do Nordeste</option>
-          <option>Caixa Econômica Federal</option>
-          <option>Sicoob</option>
-          <option>Sicredi</option>
-          <option>Bradesco</option>
-          <option>Santander</option>
-          <option>Itaú</option>
-          <option>Cresol</option>
-          <option>Banrisul</option>
-          </select></label>
+        <label>Banco<input id="banco" class="letters-only" placeholder="Banco do Brasil, Banco do Nordeste..." /></label>
         <label>Agência<input id="agencia" class="numbers-only" inputmode="numeric" placeholder="Número da agência" /></label>
         <label>Cidade da agência<input id="cidadeAgencia" class="letters-only" placeholder="Preenche pelo município ou manualmente" /></label>
         <label>Conta<input id="conta" class="numbers-only" inputmode="numeric" placeholder="Número da conta" /></label>
