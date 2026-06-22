@@ -28,3 +28,9 @@ firebase deploy
 ## Atualização Perfil
 
 Esta versão inclui a aba **Perfil**, onde o usuário logado pode alterar nome, CPF, telefone e senha pelo Firebase Authentication/Firestore.
+
+## Atualização solicitada
+
+- Adicionado Telefone/WhatsApp do cônjuge na aba Produtor.
+- Agência e Conta aceitam hífen (-), letra X e não têm limite de caracteres.
+- Removido o campo Número da proposta da aba Projeto, do PDF, da planilha e da validação de progresso.

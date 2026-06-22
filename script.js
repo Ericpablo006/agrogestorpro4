@@ -279,14 +279,14 @@ function showPage(i){
  calcProgress();
 }
 function getData(){return{
- nome:$('nome').value,cpf:$('cpf').value,rg:$('rg').value,nascimento:$('nascimento').value,estadoCivil:$('estadoCivil').value,telefone:$('telefone').value,email:$('email').value,caf:$('caf').value,
+ nome:$('nome').value,apelido:$('apelido')?.value||'',cpf:$('cpf').value,rg:$('rg').value,nascimento:$('nascimento').value,estadoCivil:$('estadoCivil').value,telefone:$('telefone').value,email:$('email').value,caf:$('caf').value,conjugeNome:$('conjugeNome')?.value||'',conjugeCpf:$('conjugeCpf')?.value||'',conjugeNascimento:$('conjugeNascimento')?.value||'',conjugeTelefone:$('conjugeTelefone')?.value||'',
  propriedade:$('propriedade').value,comunidade:$('comunidade').value,cep:$('cep')?.value||'',municipio:$('municipio').value,uf:$('uf').value,areaTotal:$('areaTotal').value,areaProdutiva:$('areaProdutiva').value,areaPlantio:$('areaPlantio')?.value||'',car:$('car').value,ccir:$('ccir').value,itr:$('itr').value,gps:$('gps').value,seiaLogin:$('seiaLogin')?.value||'',seiaSenha:$('seiaSenha')?.value||'',
- numeroProposta:$('numeroProposta')?.value||'',banco:$('banco').value,agencia:$('agencia')?.value||'',cidadeAgencia:$('cidadeAgencia')?.value||'',conta:$('conta')?.value||'',linha:$('linha').value,finalidade:$('finalidade').value,valorSolicitado:$('valorSolicitado').value,prazo:$('prazo').value,carencia:$('carencia').value,
+ banco:$('banco').value,agencia:$('agencia')?.value||'',cidadeAgencia:$('cidadeAgencia')?.value||'',conta:$('conta')?.value||'',linha:$('linha').value,finalidade:$('finalidade').value,valorSolicitado:$('valorSolicitado').value,prazo:$('prazo').value,carencia:$('carencia').value,
  dataVisita:$('dataVisita').value,tecnico:$('tecnico').value,objetivoVisita:$('objetivoVisita').value,observacoes:$('observacoes').value,recomendacoes:$('recomendacoes').value,
  culturas:getRows('culturasBody'),pecuaria:getRows('pecuariaBody'),itens:getRows('itensBody'),garantia:getGarantiaRows(),agenda:agendaItens,docs:docs.map(docMeta)
 };}
 async function setData(d={}){
- ['nome','cpf','rg','nascimento','estadoCivil','telefone','email','caf','propriedade','comunidade','cep','municipio','uf','areaTotal','areaProdutiva','areaPlantio','car','ccir','itr','gps','seiaLogin','seiaSenha','consultaCar','consultaSeiaLogin','consultaSeiaSenha','situacaoAmbiental','obsAmbiental','roteiroChegada','numeroProposta','banco','agencia','cidadeAgencia','conta','linha','finalidade','valorSolicitado','prazo','carencia','dataVisita','tecnico','objetivoVisita','observacoes','recomendacoes'].forEach(id=>{if($(id)) $(id).value=d[id]||''});
+ ['nome','apelido','cpf','rg','nascimento','estadoCivil','telefone','email','caf','conjugeNome','conjugeCpf','conjugeNascimento','conjugeTelefone','propriedade','comunidade','cep','municipio','uf','areaTotal','areaProdutiva','areaPlantio','car','ccir','itr','gps','seiaLogin','seiaSenha','consultaCar','consultaSeiaLogin','consultaSeiaSenha','situacaoAmbiental','obsAmbiental','roteiroChegada','banco','agencia','cidadeAgencia','conta','linha','finalidade','valorSolicitado','prazo','carencia','dataVisita','tecnico','objetivoVisita','observacoes','recomendacoes'].forEach(id=>{if($(id)) $(id).value=d[id]||''});
  renderRows('culturasBody',d.culturas||[],['cultura','area','producao','unidade','preco']);
  renderRows('pecuariaBody',d.pecuaria||[],['atividade','qtd','producao','unidade','preco']);
  renderRows('itensBody',d.itens||[],['descricao','qtd','valor']);
@@ -350,7 +350,7 @@ function calcAll(){
 }
 function calcProgress(){
  const d=getData();
- const required=['nome','cpf','telefone','caf','propriedade','municipio','areaTotal','areaPlantio','car','banco','linha','numeroProposta','valorSolicitado'];
+ const required=['nome','cpf','telefone','caf','propriedade','municipio','areaTotal','areaPlantio','car','banco','linha','valorSolicitado'];
  let ok=required.filter(k=>d[k]).length;
  if(d.culturas.length) ok++; if(d.pecuaria.length) ok++; if(d.itens.length) ok++; if((d.garantia||[]).length) ok++; if(d.observacoes) ok++; if(d.docs.length) ok++; if((d.agenda||[]).length) ok++;
  const pct=Math.min(100,Math.round(ok/(required.length+7)*100));
@@ -458,7 +458,7 @@ function gerarPDF(){
  const d=getData(); const {jsPDF}=window.jspdf; const pdf=new jsPDF(); let y=12;
  function line(t){pdf.text(String(t||''),12,y);y+=8;if(y>280){pdf.addPage();y=12}}
  pdf.setFontSize(16);line('AgroGestor Pro - Ficha do Produtor');pdf.setFontSize(11);
- line(`Nome: ${d.nome}`);line(`CPF: ${d.cpf}   RG: ${d.rg}`);line(`Estado civil: ${d.estadoCivil}`);line(`Telefone: ${d.telefone}   CAF: ${d.caf}`);
+ line(`Nome: ${d.nome}${d.apelido ? ' | Apelido: '+d.apelido : ''}`);line(`CPF: ${d.cpf}   RG: ${d.rg}`);line(`Estado civil: ${d.estadoCivil}`);line(`Telefone: ${d.telefone}   CAF: ${d.caf}`);if(d.conjugeNome || d.conjugeCpf || d.conjugeTelefone){line(`Cônjuge: ${d.conjugeNome||''} | CPF: ${d.conjugeCpf||''} | Nascimento: ${d.conjugeNascimento||''} | Tel: ${d.conjugeTelefone||''}`);}
  line(`Propriedade: ${d.propriedade} - ${d.comunidade} - ${d.municipio}/${d.uf}`);line(`CEP: ${d.cep}`);
  line(`Área total: ${d.areaTotal} ha | Área produtiva: ${d.areaProdutiva} ha | Área para plantio: ${d.areaPlantio} ha`);
  line(`CAR: ${d.car} | CCIR: ${d.ccir} | ITR/NIRF: ${d.itr}`); line(`SEIA login: ${d.seiaLogin||''} | SEIA senha: ${d.seiaSenha ? '********' : ''}`); line('');
@@ -466,7 +466,7 @@ function gerarPDF(){
  line(''); line('PECUÁRIA'); d.pecuaria.forEach(c=>line(`${c.atividade||'-'} | Qtd: ${c.qtd||0} | Produção: ${c.producao||0} ${c.unidade||''} | Preço: ${money(c.preco)} | Receita: ${money((+c.producao||0)*(+c.preco||0))}`));
  line(''); line('GARANTIA / AVALIAÇÃO DO IMÓVEL'); (d.garantia||[]).forEach(g=>line(`${g.item||'-'} | Qtd: ${g.quantidade||0} ${g.unidade||''} | Idade: ${g.idade||''} | Estado: ${g.estado||''} | Valor: ${money(g.valor)} | Total: ${money((+g.quantidade||0)*(+g.valor||0))}`)); line('Total garantia: '+money((d.garantia||[]).reduce((s,g)=>s+(+g.quantidade||0)*(+g.valor||0),0)));
  line(''); line('DOCUMENTOS'); d.docs.forEach(x=>line(`- ${x.name}`));
- line(''); line('PROJETO PRONAF'); line(`Proposta: ${d.numeroProposta||''}`); line(`Banco: ${d.banco} | Agência: ${d.agencia||''} | Cidade agência: ${d.cidadeAgencia||''} | Conta: ${d.conta||''}`); line(`Linha: ${d.linha} | Valor: ${money(d.valorSolicitado)}`); d.itens.forEach(i=>line(`${i.descricao||'-'} | Qtd: ${i.qtd||0} | Unit: ${money(i.valor)} | Total: ${money((+i.qtd||0)*(+i.valor||0))}`));
+ line(''); line('PROJETO PRONAF'); line(`Banco: ${d.banco} | Agência: ${d.agencia||''} | Cidade agência: ${d.cidadeAgencia||''} | Conta: ${d.conta||''}`); line(`Linha: ${d.linha} | Valor: ${money(d.valorSolicitado)}`); d.itens.forEach(i=>line(`${i.descricao||'-'} | Qtd: ${i.qtd||0} | Unit: ${money(i.valor)} | Total: ${money((+i.qtd||0)*(+i.valor||0))}`));
  line(''); line('ROTEIRO PARA CHEGAR NA PROPRIEDADE'); line(`Data: ${d.dataVisita} | Técnico: ${d.tecnico}`); line(`Objetivo: ${d.objetivoVisita}`); line(`Observações: ${d.observacoes}`); line(`Recomendações: ${d.recomendacoes}`);
  pdf.save(`Ficha_${(d.nome||'produtor').replaceAll(' ','_')}.pdf`);
 }
@@ -538,6 +538,17 @@ function configurarValidacoes(){
       $(btnId).textContent = campo.type === 'password' ? '👁️' : '🙈';
     };
   });
+
+  ['agencia','conta'].forEach(id=>{
+    const campo=$(id);
+    if(campo){
+      campo.removeAttribute('maxlength');
+      campo.addEventListener('input',()=>{
+        campo.value = String(campo.value||'').toUpperCase().replace(/[^0-9A-Z-]/g,'');
+      });
+    }
+  });
+
   if($('agencia')) $('agencia').addEventListener('blur',()=>{
     if($('cidadeAgencia') && !$('cidadeAgencia').value.trim()) $('cidadeAgencia').value = $('municipio')?.value || '';
     calcProgress();
@@ -644,14 +655,14 @@ function capturarGps(){ if(!navigator.geolocation){alert('GPS não disponível n
 function abrirCAR(){ window.open('https://www.car.gov.br/#/consultar','_blank'); }
 function abrirSEIA(){ window.open('http://sistema.seia.ba.gov.br/','_blank'); }
 function gerarPlanilha(){
- const linhas=[['Nome','CPF','Número da proposta','Valor financiado']];
- produtores.forEach(p=>linhas.push([p.nome||'',p.cpf||'',p.numeroProposta||'',p.valorSolicitado||'']));
+ const linhas=[['Nome','CPF','Valor financiado']];
+ produtores.forEach(p=>linhas.push([p.nome||'',p.cpf||'',p.valorSolicitado||'']));
  const csv='\ufeff'+linhas.map(l=>l.map(v=>'"'+String(v).replaceAll('"','""')+'"').join(';')).join('\n');
  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='produtores_propostas.csv'; a.click();
 }
 function analisarIA(){
  const d=getData(); const falt=[];
- ['nome','cpf','caf','car','areaTotal','areaPlantio','banco','linha','numeroProposta','valorSolicitado'].forEach(c=>{if(!d[c]) falt.push(c)});
+ ['nome','cpf','caf','car','areaTotal','areaPlantio','banco','linha','valorSolicitado'].forEach(c=>{if(!d[c]) falt.push(c)});
  const receita=[...(d.culturas||[]),...(d.pecuaria||[])].reduce((s,x)=>s+(+x.producao||0)*(+x.preco||0),0);
  const valor=+d.valorSolicitado||0;
  let capacidade = receita ? (valor/Math.max(receita,1)) : 0;

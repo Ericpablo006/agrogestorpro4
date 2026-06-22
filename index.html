@@ -115,7 +115,7 @@
         <label>CAF<input id="caf" /></label>
          <label>
         Apelido
-        <input id="apelido" type="pass-word" placeholder="Como é conhecido">
+        <input id="apelido" type="text" class="letters-only" placeholder="Como é conhecido">
       </label>
 
     </div>
@@ -137,7 +137,7 @@
 
       <label>
         CPF do cônjuge
-        <input id="conjugeCpf" maxlength="14">
+        <input id="conjugeCpf" class="numbers-only cpf-field" inputmode="numeric" maxlength="14" placeholder="000.000.000-00">
       </label>
 
       <label>
@@ -146,8 +146,8 @@
       </label>
 
       <label>
-        Telefone/whathsapp
-        <input id=" Telefone/whathsapp" class="numbers-only phone-field" inputmode="numeric" placeholder="(00) 00000-0000" />
+        Telefone/WhatsApp do cônjuge
+        <input id="conjugeTelefone" class="numbers-only phone-field" inputmode="numeric" placeholder="(00) 00000-0000" />
       </label>
 
     </div>
@@ -193,7 +193,6 @@
 
     <section class="page" data-page="projeto">
       <div class="panel grid2">
-        <label>Número da proposta<input id="numeroProposta" class="numbers-only" inputmode="numeric" placeholder="Número da proposta" /></label>
         <label>Banco<select id="banco">
           <option value="">Selecione</option>
           <option>Banco do Brasil</option>
@@ -207,9 +206,9 @@
           <option>Cresol</option>
           <option>Banrisul</option>
           </select></label>
-        <label>Agência<input id="agencia" maxlength="9" placeholder="0000-0" /></label>
+        <label>Agência<input id="agencia" inputmode="text" placeholder="Ex: 4621-3" /></label>
         <label>Cidade da agência<input id="cidadeAgencia" class="letters-only" placeholder="Preenche pelo município ou manualmente" /></label>
-        <label>Conta<input id="conta"   maxlength="9" placeholder="0000-0"/></label>
+        <label>Conta<input id="conta" inputmode="text" placeholder="Ex: 12345-6" /></label>
         <label>Linha do PRONAF<select id="linha">
             <option value="">Selecione a linha</option>
             <option>PRONAF Custeio</option>
